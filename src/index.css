@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deep-sea: #0B2A3D;
+  --color-twilight-teal: #123B4F;
+  --color-sunset-coral: #FF7F5C;
+  --color-golden-sand: #F4C87A;
+  --color-foam-white: #F7F3E9;
+  --color-lagoon: #2F86A6;
+  --color-shallow-water: #8FD6E1;
+  --color-driftwood: #2B2420;
+  --color-bone-sand: #EFE6D8;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "Space Mono", monospace;
+
+  --animate-wave-drift: wave-drift 20s linear infinite;
+  --animate-wave-drift-reverse: wave-drift-reverse 20s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-sun-rise: sun-rise 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  --animate-wave-rise: wave-rise 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  --animate-water-ripple: ripple 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+
+  @keyframes wave-drift {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes wave-drift-reverse {
+    0% { transform: translate3d(-50%, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+  @keyframes sun-rise {
+    0% { transform: translateY(100px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes wave-rise {
+    0% { transform: scaleY(0); }
+    100% { transform: scaleY(1); }
+  }
+  @keyframes ripple {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-deep-sea);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-twilight-teal);
+  border: 2px solid var(--color-deep-sea);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-sunset-coral);
+}
+
+/* Global resets & typography */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background-color: var(--color-deep-sea);
+  color: var(--color-foam-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Utilities */
+.text-stroke {
+  -webkit-text-stroke: 1px var(--color-foam-white);
+  color: transparent;
+}
+
+.text-stroke-coral {
+  -webkit-text-stroke: 1px var(--color-sunset-coral);
+  color: transparent;
+}
+
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-golden-sand);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-cursor-hover {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-sunset-coral);
+  mix-blend-mode: normal;
+}
+
+.clip-wave {
+  clip-path: url(#wave-clip);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Awwwards-style wipe-through link underlines */
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+.wipe-underline {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.wipe-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-golden-sand);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.wipe-underline:hover::after,
+.wipe-underline.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Ken Burns slow zoom loop for hero wallpaper */
+@keyframes kenburns {
+  0%, 100% {
+    transform: scale(1.02);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.animate-ken-burns {
+  animation: kenburns 30s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .custom-cursor {
+    display: none !important;
+  }
+}
