@@ -7,6 +7,7 @@ import ServiceSummary from './sections/ServiceSummary';
 import Works from './sections/Works/Works';
 import Marquee from './sections/Marquee/Marquee';
 import About from './sections/About/About';
+import Articles from './sections/Articles/Articles';
 import Contact from './sections/Contact/Contact';
 import Footer from './components/Footer';
 
@@ -32,19 +33,16 @@ function App() {
         <main className="flex-grow">
           {/* Scrollable sections in structural stack */}
           <Hero />
-          {/* Shift subsequent sections to accommodate left desktop sidebar */}
-          <div className="md:pl-20">
-            <ServiceSummary />
-            <Works />
-            <Marquee />
-            <About />
-            <Contact />
-          </div>
+          
+          <ServiceSummary />
+          <Works />
+          <Marquee />
+          <About />
+          <Articles />
+          <Contact />
         </main>
 
-        <div className="md:pl-20">
-          <Footer />
-        </div>
+        <Footer />
       </div>
     </>
   );

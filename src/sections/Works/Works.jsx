@@ -130,7 +130,7 @@ export default function Works() {
     <section
       id="works"
       ref={containerRef}
-      className="relative bg-deep-sea py-24 md:py-32 px-6 md:px-12 border-t border-twilight-teal/20 overflow-hidden"
+      className="relative bg-deep-sea py-24 md:py-32 px-6 md:pl-32 md:pr-12 border-t border-twilight-teal/20 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
         

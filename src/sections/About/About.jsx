@@ -65,7 +65,7 @@ export default function About() {
     <section
       id="about"
       ref={containerRef}
-      className="relative bg-bone-sand text-driftwood py-24 md:py-32 px-6 md:px-12 overflow-hidden"
+      className="relative bg-bone-sand text-driftwood py-24 md:py-32 px-6 md:pl-32 md:pr-12 overflow-hidden"
     >
       {/* Decorative Beach Grass SVG Accent */}
       <div className="absolute top-10 right-10 opacity-10 pointer-events-none">

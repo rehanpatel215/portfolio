@@ -120,7 +120,7 @@ export default function Contact() {
     <section
       id="contact"
       ref={containerRef}
-      className="relative bg-gradient-to-b from-twilight-teal to-[#071924] py-24 md:py-32 px-6 md:px-12 overflow-hidden border-t border-twilight-teal/20"
+      className="relative bg-gradient-to-b from-twilight-teal to-[#071924] py-24 md:py-32 px-6 md:pl-32 md:pr-12 overflow-hidden border-t border-twilight-teal/20"
     >
       {/* Glow highlight mimicking sundown colors */}
       <div className="absolute -bottom-48 left-1/2 -translate-x-1/2 w-96 h-96 bg-[radial-gradient(circle,rgba(255,127,92,0.12)_0%,transparent_70%)] pointer-events-none" />
