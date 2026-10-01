@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Waves, ArrowRight } from 'lucide-react';
+import portraitImg from '../../assets/photoo.jpeg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,13 +13,17 @@ export default function About() {
   const textBlockRef = useRef(null);
 
   useGSAP(() => {
-    // 1. Shoreline mask reveal on the portrait graphic
+    // 1. Shoreline mask reveal on the portrait graphic and rotation animation
     gsap.fromTo(imageRef.current,
-      { clipPath: 'polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%)' },
+      { 
+        clipPath: 'polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%)',
+        rotation: 720
+      },
       {
-        clipPath: 'polygon(0% 10%, 100% 0%, 100% 100%, 0% 90%)',
-        duration: 1.4,
-        ease: 'power3.inOut',
+        clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)', // removed slanted clipPath for better portrait display
+        rotation: 0,
+        duration: 2.5,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: imageRef.current,
           start: 'top bottom-=80',
@@ -85,9 +90,9 @@ export default function About() {
             className="w-full max-w-[380px] aspect-[4/5] bg-gradient-to-tr from-twilight-teal to-sunset-coral rounded-2xl relative shadow-xl overflow-hidden"
             style={{ clipPath: 'polygon(0% 50%, 100% 50%, 100% 50%, 0% 50%)' }}
           >
-            {/* Background image loaded from public assets */}
+            {/* Background image loaded from src/assets */}
             <img 
-              src="/images/beach-wallpaper.jpg" 
+              src={portraitImg} 
               alt="Rehan Patel" 
               className="absolute inset-0 w-full h-full object-cover select-none"
             />
@@ -136,7 +141,8 @@ export default function About() {
             </a>
             
             <a
-              href="#resume"
+              href="/REHAN_RESUME.pdf"
+              download="REHAN_RESUME.pdf"
               className="font-mono text-xs text-driftwood/60 hover:text-sunset-coral tracking-widest uppercase border-b border-driftwood/20 hover:border-sunset-coral pb-1 transition-all duration-300"
               data-hover
             >

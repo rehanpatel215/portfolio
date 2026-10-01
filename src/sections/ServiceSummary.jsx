@@ -1,43 +1,78 @@
-import React, { useRef } from 'react';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useRef, useEffect } from 'react';
 
 export default function ServiceSummary() {
   const containerRef = useRef(null);
-  const textRowRef = useRef(null);
+  const scrollWrapperRef = useRef(null);
+  const contentRef = useRef(null);
+  const isHovered = useRef(false);
 
-  useGSAP(() => {
-    // Scroll-linked horizontal translation of the summary text
-    gsap.fromTo(textRowRef.current,
-      { x: '10%' },
-      {
-        x: '-25%',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1.2 // High scrub duration creates a smooth lag/tide effect
+  useEffect(() => {
+    const el = scrollWrapperRef.current;
+    const content = contentRef.current;
+    if (!el || !content) return;
+
+    let animationFrameId;
+    let exactScrollLeft = 0;
+
+    const loop = () => {
+      const loopWidth = content.offsetWidth;
+      
+      if (!isHovered.current) {
+        exactScrollLeft += 1; // Steady automatic speed
+        
+        // Seamless loop reset
+        if (exactScrollLeft >= loopWidth) {
+          exactScrollLeft -= loopWidth;
+        } else if (exactScrollLeft <= 0) {
+          exactScrollLeft += loopWidth;
         }
+        
+        el.scrollLeft = exactScrollLeft;
       }
-    );
-  }, { scope: containerRef });
+      
+      animationFrameId = requestAnimationFrame(loop);
+    };
+
+    animationFrameId = requestAnimationFrame(loop);
+
+    const onWheel = (e) => {
+      e.preventDefault(); // Trap scroll inside the box completely
+      
+      el.scrollLeft += e.deltaY * 3; // Improved scroll sensitivity
+      
+      const loopWidth = content.offsetWidth;
+      if (el.scrollLeft >= loopWidth) {
+        el.scrollLeft -= loopWidth;
+      } else if (el.scrollLeft <= 0) {
+        el.scrollLeft += loopWidth;
+      }
+      
+      exactScrollLeft = el.scrollLeft;
+    };
+    
+    // { passive: false } is required to use e.preventDefault()
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      el.removeEventListener('wheel', onWheel);
+    };
+  }, []);
 
   const capabilities = [
-    { num: '01', title: 'Creative Engineering' },
-    { num: '02', title: 'Interactive Prototypes' },
-    { num: '03', title: 'Immersive 3D/WebGL' },
-    { num: '04', title: 'Organic Motion Design' },
-    { num: '05', title: 'Performance Optimization' }
+    'Machine Learning',
+    'Natural Language Processing',
+    'Computer Vision',
+    'Full Stack',
+    'Problem Solving',
+    'Data Processing',
+    'Open Source Contribution',
+    'N8N'
   ];
 
   return (
     <section
       ref={containerRef}
-      className="relative py-12 bg-twilight-teal border-y border-golden-sand/10 overflow-hidden select-none"
+      className="relative py-12 bg-twilight-teal border-y border-golden-sand/10 select-none"
     >
       {/* Subtle wave SVG pattern backdrop */}
       <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
@@ -49,25 +84,43 @@ export default function ServiceSummary() {
         </svg>
       </div>
 
+      {/* Horizontally scrollable wrapper */}
       <div 
-        ref={textRowRef} 
-        className="flex items-center gap-16 whitespace-nowrap will-change-transform"
+        ref={scrollWrapperRef} 
+        onMouseEnter={() => (isHovered.current = true)}
+        onMouseLeave={() => (isHovered.current = false)}
+        className="flex items-center overflow-x-hidden relative z-10 w-full"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {/* Repeat list twice for continuous scrolling feel */}
-        {[...capabilities, ...capabilities].map((cap, index) => (
-          <div 
-            key={index}
-            className="flex items-center gap-6"
-          >
-            <span className="font-mono text-xs tracking-widest text-golden-sand border border-golden-sand/20 rounded px-2.5 py-0.5 bg-deep-sea/20">
-              {cap.num}
-            </span>
-            <span className="font-display text-2xl md:text-3xl font-semibold tracking-wide text-foam-white uppercase">
-              {cap.title}
-            </span>
-            <span className="text-sunset-coral font-bold text-lg">•</span>
-          </div>
-        ))}
+        {/* Set 1 */}
+        <div ref={contentRef} className="flex items-center gap-16 pr-16 shrink-0">
+          {capabilities.map((title, index) => (
+            <div 
+              key={`set1-${index}`}
+              className="flex items-center gap-6 shrink-0"
+            >
+              <span className="font-display text-2xl md:text-3xl font-semibold tracking-wide text-foam-white uppercase">
+                {title}
+              </span>
+              <span className="text-sunset-coral font-bold text-lg">•</span>
+            </div>
+          ))}
+        </div>
+        
+        {/* Set 2 (Duplicate for seamless loop) */}
+        <div className="flex items-center gap-16 pr-16 shrink-0">
+          {capabilities.map((title, index) => (
+            <div 
+              key={`set2-${index}`}
+              className="flex items-center gap-6 shrink-0"
+            >
+              <span className="font-display text-2xl md:text-3xl font-semibold tracking-wide text-foam-white uppercase">
+                {title}
+              </span>
+              <span className="text-sunset-coral font-bold text-lg">•</span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   motion,
   useScroll,
@@ -25,8 +25,12 @@ function MarqueeRow({ children, baseVelocity = 100 }) {
   });
 
   const directionFactor = useRef(1);
+  const containerRef = useRef(null);
+  const isHovered = useRef(false);
 
   useAnimationFrame((time, delta) => {
+    if (isHovered.current) return; // Pause on hover
+
     let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
 
     // If scrolling down, speed up. If scrolling up, reverse and speed up.
@@ -37,9 +41,26 @@ function MarqueeRow({ children, baseVelocity = 100 }) {
     }
 
     moveBy += directionFactor.current * moveBy * velocityFactor.get();
-
     baseX.set(baseX.get() + moveBy);
   });
+
+  // Handle manual scrolling on hover
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onWheel = (e) => {
+      if (!isHovered.current) return;
+      e.preventDefault(); // Trap scroll inside the marquee row
+      
+      // Map vertical scroll (deltaY) to horizontal movement
+      // Multiply by a factor to make it feel responsive
+      baseX.set(baseX.get() + e.deltaY * 0.03); 
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
 
   // Calculate wrap offset for infinite loop
   const x = useTransform(baseX, (v) => {
@@ -49,7 +70,12 @@ function MarqueeRow({ children, baseVelocity = 100 }) {
   });
 
   return (
-    <div className="flex overflow-hidden whitespace-nowrap flex-nowrap w-full">
+    <div 
+      ref={containerRef}
+      onMouseEnter={() => (isHovered.current = true)}
+      onMouseLeave={() => (isHovered.current = false)}
+      className="flex overflow-hidden whitespace-nowrap flex-nowrap w-full cursor-default"
+    >
       <motion.div 
         className="flex whitespace-nowrap flex-nowrap font-display text-5xl md:text-7xl font-extrabold uppercase select-none tracking-wider gap-x-12"
         style={{ x }}
@@ -66,15 +92,25 @@ function MarqueeRow({ children, baseVelocity = 100 }) {
 
 export default function Marquee() {
   const skills = [
-    { text: 'React', color: 'text-foam-white' },
-    { text: 'Three.js', color: 'text-golden-sand' },
-    { text: 'GSAP', color: 'text-sunset-coral' },
-    { text: 'WebGL', color: 'text-foam-white' },
-    { text: 'Shaders', color: 'text-golden-sand' },
-    { text: 'Framer Motion', color: 'text-shallow-water' },
-    { text: 'Edge Compute', color: 'text-sunset-coral' },
-    { text: 'Tailwind CSS', color: 'text-foam-white' },
-    { text: 'UI Design', color: 'text-golden-sand' }
+    { text: 'Python', color: 'text-foam-white' },
+    { text: 'Deep Learning', color: 'text-golden-sand' },
+    { text: 'RAG', color: 'text-sunset-coral' },
+    { text: 'LangChain', color: 'text-shallow-water' },
+    { text: 'Data Analysis', color: 'text-foam-white' },
+    { text: 'Model Evaluation', color: 'text-golden-sand' },
+    { text: 'OpenCV', color: 'text-sunset-coral' },
+    { text: 'Matplotlib', color: 'text-shallow-water' },
+    { text: 'React & Node.js', color: 'text-foam-white' },
+    { text: 'REST APIs', color: 'text-golden-sand' },
+    { text: 'C & Java', color: 'text-sunset-coral' },
+    { text: 'JavaScript', color: 'text-shallow-water' },
+    { text: 'HTML & CSS', color: 'text-foam-white' },
+    { text: 'Statistics', color: 'text-golden-sand' },
+    { text: 'Model Development', color: 'text-sunset-coral' },
+    { text: 'Data Preprocessing', color: 'text-shallow-water' },
+    { text: 'EDA', color: 'text-foam-white' },
+    { text: 'Git & GitHub', color: 'text-golden-sand' },
+    { text: 'Data Validation', color: 'text-sunset-coral' }
   ];
 
   return (
@@ -95,7 +131,7 @@ export default function Marquee() {
       <div className="relative z-10 w-full flex flex-col gap-8">
         
         {/* Row 1 (Scrolled Left) */}
-        <MarqueeRow baseVelocity={-20}>
+        <MarqueeRow baseVelocity={-5}>
           {skills.map((skill, index) => (
             <span key={index} className={`${skill.color} flex items-center gap-12`}>
               <span>{skill.text}</span>
@@ -105,7 +141,7 @@ export default function Marquee() {
         </MarqueeRow>
 
         {/* Row 2 (Scrolled Right) */}
-        <MarqueeRow baseVelocity={20}>
+        <MarqueeRow baseVelocity={5}>
           {[...skills].reverse().map((skill, index) => (
             <span key={index} className={`${skill.color} flex items-center gap-12`}>
               <span>{skill.text}</span>

@@ -11,9 +11,12 @@ const nameVariants = [
   'REHAN PATEL'   // English (Final)
 ];
 
+const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:,.<>?/1234567890';
+
 export default function Hero() {
-  const [nameIndex, setNameIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
   const [isSettled, setIsSettled] = useState(false);
+  const [isScrambling, setIsScrambling] = useState(false);
   const [roleIndex, setRoleIndex] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   
@@ -21,6 +24,9 @@ export default function Hero() {
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const scrollCueRef = useRef(null);
+  const scrambleIntervalRef = useRef(null);
+  const sequenceTimeoutRef = useRef(null);
+  const isRunningRef = useRef(false);
 
   const roles = [
     'Creative Developer',
@@ -38,29 +44,72 @@ export default function Hero() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 2. Language cycling animation on load
-  useEffect(() => {
+  const scrambleTo = (targetText) => {
+    return new Promise((resolve) => {
+      let iteration = 0;
+      clearInterval(scrambleIntervalRef.current);
+      
+      scrambleIntervalRef.current = setInterval(() => {
+        setDisplayText((currentText) => {
+          const currentLength = currentText ? currentText.length : 0;
+          const textLength = Math.max(targetText.length, currentLength);
+          return Array.from({ length: textLength })
+            .map((_, index) => {
+              if (index < Math.floor(iteration)) {
+                return targetText[index] || '';
+              }
+              return CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)];
+            })
+            .join('');
+        });
+        
+        iteration += 1;
+        
+        if (iteration > targetText.length) {
+          clearInterval(scrambleIntervalRef.current);
+          setDisplayText(targetText);
+          resolve();
+        }
+      }, 30);
+    });
+  };
+
+  const runScrambleSequence = async () => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
     if (prefersReduced) {
-      setNameIndex(nameVariants.length - 1);
+      setDisplayText(nameVariants[nameVariants.length - 1]);
       setIsSettled(true);
       return;
     }
 
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 1;
-      if (current >= nameVariants.length - 1) {
-        clearInterval(interval);
-        setNameIndex(nameVariants.length - 1);
-        setIsSettled(true);
-      } else {
-        setNameIndex(current);
-      }
-    }, 220); // Swaps name every 220ms
+    if (isRunningRef.current) return;
+    isRunningRef.current = true;
+    setIsScrambling(true);
 
-    return () => clearInterval(interval);
+    for (let i = 0; i < nameVariants.length; i++) {
+      if (!isRunningRef.current) break;
+      await scrambleTo(nameVariants[i]);
+      if (i < nameVariants.length - 1 && isRunningRef.current) {
+        await new Promise(r => { sequenceTimeoutRef.current = setTimeout(r, 100) });
+      }
+    }
+    
+    if (isRunningRef.current) {
+      setIsScrambling(false);
+      setIsSettled(true);
+      isRunningRef.current = false;
+    }
+  };
+
+  // 2. Language cycling animation on load
+  useEffect(() => {
+    runScrambleSequence();
+    return () => {
+      isRunningRef.current = false;
+      clearInterval(scrambleIntervalRef.current);
+      clearTimeout(sequenceTimeoutRef.current);
+      setIsScrambling(false);
+    };
   }, []);
 
   // 3. Cycle through subtitle roles
@@ -118,12 +167,12 @@ export default function Hero() {
         }}
       >
         <img 
-          src="/images/hero/beach-hero.jpg" 
+          src="/images/beach-wallpaper.jpg" 
           alt="Beach Background" 
           className="w-full h-full object-cover animate-ken-burns scale-102"
         />
-        {/* Dark warm gradient mask for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-deep-sea/25 via-deep-sea/50 to-deep-sea/95" />
+        {/* Subtle gradient mask to keep text readable while keeping image bright */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-deep-sea/10 to-deep-sea/80" />
       </div>
 
       {/* R3F Interactive Waves overlaid at the bottom as a subtle water accent */}
@@ -137,16 +186,17 @@ export default function Hero() {
         {/* Animated multi-language name cycles */}
         <h1 
           ref={titleRef}
-          className="font-display text-6xl md:text-8xl font-black tracking-tight leading-none min-h-[70px] md:min-h-[96px] flex items-center justify-center"
+          onMouseEnter={runScrambleSequence}
+          className="font-display text-6xl md:text-8xl font-black tracking-tight leading-none min-h-[70px] md:min-h-[96px] flex items-center justify-center cursor-default"
         >
           <span 
             className={`transition-all duration-300 ${
-              isSettled 
+              !isScrambling && isSettled 
                 ? 'text-foam-white drop-shadow-md' 
                 : 'text-golden-sand font-medium scale-95 opacity-80 filter blur-[0.5px]'
             }`}
           >
-            {nameVariants[nameIndex]}
+            {displayText}
           </span>
         </h1>
 
