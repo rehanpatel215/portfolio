@@ -6,6 +6,9 @@ export default function ServiceSummary() {
   const contentRef = useRef(null);
   const isHovered = useRef(false);
 
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const isScrollingVertically = useRef(false);
+
   useEffect(() => {
     const el = scrollWrapperRef.current;
     const content = contentRef.current;
@@ -50,11 +53,70 @@ export default function ServiceSummary() {
       exactScrollLeft = el.scrollLeft;
     };
     
-    // { passive: false } is required to use e.preventDefault()
+    const onTouchStart = (e) => {
+      isHovered.current = true;
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+      isScrollingVertically.current = false;
+    };
+
+    const onTouchMove = (e) => {
+      if (!isHovered.current) return;
+  
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      
+      const diffX = touchStartRef.current.x - currentX;
+      const diffY = touchStartRef.current.y - currentY;
+  
+      // Detect vertical vs horizontal scroll
+      if (!isScrollingVertically.current && Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 5) {
+        isScrollingVertically.current = true;
+      }
+  
+      if (isScrollingVertically.current) {
+        isHovered.current = false;
+        return;
+      }
+  
+      // Trap horizontal scroll
+      if (e.cancelable) e.preventDefault(); 
+      
+      el.scrollLeft += diffX * 1.5; // Touch drag sensitivity
+      
+      const loopWidth = content.offsetWidth;
+      if (el.scrollLeft >= loopWidth) {
+        el.scrollLeft -= loopWidth;
+      } else if (el.scrollLeft <= 0) {
+        el.scrollLeft += loopWidth;
+      }
+      
+      exactScrollLeft = el.scrollLeft;
+      
+      touchStartRef.current.x = currentX;
+      touchStartRef.current.y = currentY;
+    };
+
+    const onTouchEnd = () => {
+      isHovered.current = false;
+      isScrollingVertically.current = false;
+    };
+
     el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
     return () => {
       cancelAnimationFrame(animationFrameId);
       el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchEnd);
     };
   }, []);
 

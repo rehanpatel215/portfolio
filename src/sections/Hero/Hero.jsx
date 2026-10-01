@@ -187,6 +187,7 @@ export default function Hero() {
         <h1 
           ref={titleRef}
           onMouseEnter={runScrambleSequence}
+          onTouchStart={runScrambleSequence}
           className="font-display text-6xl md:text-8xl font-black tracking-tight leading-none min-h-[70px] md:min-h-[96px] flex items-center justify-center cursor-default"
         >
           <span 
