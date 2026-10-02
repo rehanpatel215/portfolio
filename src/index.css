@@ -195,3 +195,12 @@ body {
     display: none !important;
   }
 }
+
+.is-pressed {
+    animation: orb-press 0.35s cubic-bezier(.2, 1.4, .4, 1);
+}
+@keyframes orb-press {
+    0%     { transform: scale(1);     box-shadow: 0 0 0 0 rgba(124, 245, 225, 0.0); }
+    40%    { transform: scale(0.9);   box-shadow: 0 0 40px 10px rgba(124, 245, 225, 0.55); }
+    100%   { transform: scale(1);     box-shadow: 0 0 0 0 rgba(124, 245, 225, 0.0); }
+}

@@ -2,6 +2,9 @@ import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 import * as THREE from 'three';
+import { EffectComposer } from "@react-three/postprocessing";
+import { RippleEffect } from "../../components/RippleEffect.jsx";
+import { rippleStore } from "../../lib/rippleStore.js";
 
 // Procedural wave component
 function OceanWaves() {
@@ -16,35 +19,35 @@ function OceanWaves() {
     if (!meshRef.current) return;
     const time = clock.getElapsedTime();
     const posAttr = meshRef.current.geometry.attributes.position;
-    
+
     for (let i = 0; i < posAttr.count; i++) {
       // Get current x and y coordinate of the vertex
       const x = posAttr.getX(i);
       const y = posAttr.getY(i);
-      
+
       // Wave equation: layered sine/cosine waves for fluid movement
-      const zOffset = 
-        Math.sin(x * 0.6 + time * 1.0) * 0.25 + 
+      const zOffset =
+        Math.sin(x * 0.6 + time * 1.0) * 0.25 +
         Math.cos(y * 0.5 + time * 0.8) * 0.2 +
         Math.sin((x + y) * 0.3 + time * 0.5) * 0.1;
-      
+
       posAttr.setZ(i, zOffset);
     }
-    
+
     posAttr.needsUpdate = true;
     meshRef.current.geometry.computeVertexNormals();
   });
 
   return (
-    <mesh 
-      ref={meshRef} 
-      rotation={[-Math.PI / 2.2, 0, 0]} 
+    <mesh
+      ref={meshRef}
+      rotation={[-Math.PI / 2.2, 0, 0]}
       position={[0, -1.2, 0]}
       receiveShadow
     >
       <planeGeometry args={[planeSize, planeSize, segments, segments]} />
       <meshStandardMaterial
-        color="#1b5a75" // Lagoon Blue base
+        color="#2F86A6" // Lagoon Blue base to match ocean
         roughness={0.15}
         metalness={0.8}
         flatShading={true} // Low-poly water styling
@@ -66,13 +69,36 @@ function GoldenSun() {
     sunRef.current.scale.set(scale, scale, scale);
   });
 
+  const handleClick = (e) => {
+    e.stopPropagation();
+
+    const centerPos = new THREE.Vector3();
+    e.eventObject.getWorldPosition(centerPos);
+    centerPos.project(e.camera);
+
+    const cx = (centerPos.x * 0.5 + 0.5) * window.innerWidth;
+    const cy = (-(centerPos.y * 0.5) + 0.5) * window.innerHeight;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      rippleStore.spawn(cx, cy, 1.6);
+      setTimeout(() => rippleStore.spawn(cx, cy, 1.1), 220);
+      setTimeout(() => rippleStore.spawn(cx, cy, 0.7), 440);
+    }
+  };
+
   return (
-    <group position={[0, 1.5, -3]}>
+    <group
+      position={[0, 1.5, -3]}
+      onClick={handleClick}
+      onPointerOver={() => document.body.style.cursor = 'pointer'}
+      onPointerOut={() => document.body.style.cursor = 'auto'}
+    >
       {/* Dynamic light representing the sun */}
-      <pointLight 
-        color="#F4C87A" 
-        intensity={2.5} 
-        distance={20} 
+      <pointLight
+        color="#F4C87A"
+        intensity={2.5}
+        distance={20}
         decay={1.5}
         castShadow
       />
@@ -81,14 +107,14 @@ function GoldenSun() {
         <sphereGeometry args={[1.0, 32, 32]} />
         <meshBasicMaterial color="#F4C87A" />
       </mesh>
-      
+
       {/* Glow Halo Ring */}
       <mesh scale={[1.4, 1.4, 1.4]}>
         <torusGeometry args={[0.9, 0.08, 16, 100]} />
-        <meshBasicMaterial 
-          color="#FF7F5C" 
-          transparent 
-          opacity={0.4} 
+        <meshBasicMaterial
+          color="#FF7F5C"
+          transparent
+          opacity={0.4}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -99,7 +125,7 @@ function GoldenSun() {
 // Floating sand motes / bubbles component
 function SandParticles({ count = 120 }) {
   const pointsRef = useRef();
-  
+
   // Initialize particles in a bounding box
   const [positions, speeds] = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -117,7 +143,7 @@ function SandParticles({ count = 120 }) {
     if (!pointsRef.current) return;
     const geo = pointsRef.current.geometry;
     const posAttr = geo.attributes.position;
-    
+
     for (let i = 0; i < count; i++) {
       let y = posAttr.getY(i);
       y += speeds[i];
@@ -161,20 +187,24 @@ export default function HeroScene() {
         gl={{ antialias: true, alpha: true }}
       >
         <ambientLight intensity={0.5} color="#8FD6E1" />
-        
+
         {/* Soft fill light from the bottom representing reflected beach glow */}
-        <directionalLight 
-          position={[0, -2, 1]} 
-          intensity={0.4} 
-          color="#123B4F" 
+        <directionalLight
+          position={[0, -2, 1]}
+          intensity={0.6}
+          color="#8FD6E1"
         />
-        
+
         <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
           <OceanWaves />
           <GoldenSun />
         </Float>
 
         <SandParticles count={150} />
+
+        <EffectComposer multisampling={4} disableNormalPass>
+          <RippleEffect />
+        </EffectComposer>
       </Canvas>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import HeroScene from './HeroScene';
 import { Waves } from 'lucide-react';
 import gsap from 'gsap';
+import { rippleStore } from '../../lib/rippleStore.js';
 
 const nameVariants = [
   'レハン パテル', // Japanese (Katakana)
@@ -19,7 +20,7 @@ export default function Hero() {
   const [isScrambling, setIsScrambling] = useState(false);
   const [roleIndex, setRoleIndex] = useState(0);
   const [scrollY, setScrollY] = useState(0);
-  
+
   const containerRef = useRef(null);
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
@@ -48,7 +49,7 @@ export default function Hero() {
     return new Promise((resolve) => {
       let iteration = 0;
       clearInterval(scrambleIntervalRef.current);
-      
+
       scrambleIntervalRef.current = setInterval(() => {
         setDisplayText((currentText) => {
           const currentLength = currentText ? currentText.length : 0;
@@ -62,9 +63,9 @@ export default function Hero() {
             })
             .join('');
         });
-        
+
         iteration += 1;
-        
+
         if (iteration > targetText.length) {
           clearInterval(scrambleIntervalRef.current);
           setDisplayText(targetText);
@@ -93,7 +94,7 @@ export default function Hero() {
         await new Promise(r => { sequenceTimeoutRef.current = setTimeout(r, 100) });
       }
     }
-    
+
     if (isRunningRef.current) {
       setIsScrambling(false);
       setIsSettled(true);
@@ -129,27 +130,53 @@ export default function Hero() {
         { y: 20, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }
       )
-      .fromTo(scrollCueRef.current,
-        { opacity: 0, scale: 0.8 },
-        { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.7)' },
-        "-=0.4"
-      );
+        .fromTo(scrollCueRef.current,
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.7)' },
+          "-=0.4"
+        );
     }
   }, [isSettled]);
 
   const handleScrollDown = (e) => {
     e.preventDefault();
-    const nextSection = document.getElementById('works');
-    if (nextSection) {
-      const offset = window.innerWidth >= 768 ? 0 : 70; // Header height mobile
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = nextSection.getBoundingClientRect().top;
-      const position = elementRect - bodyRect - offset;
-      window.scrollTo({
-        top: position,
-        behavior: 'smooth'
-      });
-    }
+    const btn = e.currentTarget;
+    if (btn.getAttribute("disabled") === "true") return;
+
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // 1. lock the button + press feedback
+    btn.setAttribute("disabled", "true");
+    btn.setAttribute("aria-busy", "true");
+    btn.classList.add("is-pressed");
+    setTimeout(() => btn.classList.remove("is-pressed"), 400);
+
+    // 2. ripples (moved to Sun)
+
+    // 3. scroll
+    setTimeout(() => {
+      const nextSection = document.getElementById('works');
+      if (nextSection) {
+        const offset = window.innerWidth >= 768 ? 0 : 70; // Header height mobile
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = nextSection.getBoundingClientRect().top;
+        const position = elementRect - bodyRect - offset;
+        window.scrollTo({
+          top: position,
+          behavior: 'smooth'
+        });
+      }
+    }, reduced ? 0 : 400);
+
+    // 4. unlock
+    setTimeout(() => {
+      btn.removeAttribute("disabled");
+      btn.removeAttribute("aria-busy");
+    }, reduced ? 600 : 3600);
   };
 
   return (
@@ -159,20 +186,20 @@ export default function Hero() {
       className="relative w-full min-h-screen flex items-center justify-center bg-deep-sea overflow-hidden select-none"
     >
       {/* Parallax wrapping container for background photo */}
-      <div 
+      <div
         className="absolute inset-0 z-0 overflow-hidden w-full h-full"
         style={{
           transform: `translate3d(0, ${scrollY * 0.35}px, 0)`,
           willChange: 'transform'
         }}
       >
-        <img 
-          src="/images/beach-wallpaper.jpg" 
-          alt="Beach Background" 
+        <img
+          src="/images/beach-wallpaper.jpg"
+          alt="Beach Background"
           className="w-full h-full object-cover animate-ken-burns scale-102"
         />
         {/* Subtle gradient mask to keep text readable while keeping image bright */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-deep-sea/10 to-deep-sea/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-lagoon/10 to-lagoon/50" />
       </div>
 
       {/* R3F Interactive Waves overlaid at the bottom as a subtle water accent */}
@@ -182,27 +209,26 @@ export default function Hero() {
 
       {/* Foreground Hero Text content */}
       <div className="relative z-20 text-center px-6 max-w-4xl md:pl-20">
-        
+
         {/* Animated multi-language name cycles */}
-        <h1 
+        <h1
           ref={titleRef}
           onMouseEnter={runScrambleSequence}
           onTouchStart={runScrambleSequence}
           className="font-display text-6xl md:text-8xl font-black tracking-tight leading-none min-h-[70px] md:min-h-[96px] flex items-center justify-center cursor-default"
         >
-          <span 
-            className={`transition-all duration-300 ${
-              !isScrambling && isSettled 
-                ? 'text-foam-white drop-shadow-md' 
-                : 'text-golden-sand font-medium scale-95 opacity-80 filter blur-[0.5px]'
-            }`}
+          <span
+            className={`transition-all duration-300 ${!isScrambling && isSettled
+              ? 'text-foam-white drop-shadow-md'
+              : 'text-golden-sand font-medium scale-95 opacity-80 filter blur-[0.5px]'
+              }`}
           >
             {displayText}
           </span>
         </h1>
 
         {/* Rotating role subheadline */}
-        <div 
+        <div
           ref={subtitleRef}
           className="mt-6 flex flex-col items-center justify-center gap-2 opacity-0"
         >
@@ -213,13 +239,12 @@ export default function Hero() {
             {roles.map((role, idx) => (
               <span
                 key={role}
-                className={`absolute font-body text-base md:text-xl font-light text-shallow-water tracking-wide capitalize transition-all duration-700 ease-in-out ${
-                  idx === roleIndex 
-                    ? 'translate-y-0 opacity-100' 
-                    : idx === (roleIndex - 1 + roles.length) % roles.length
-                      ? '-translate-y-8 opacity-0'
-                      : 'translate-y-8 opacity-0'
-                }`}
+                className={`absolute font-body text-base md:text-xl font-light text-shallow-water tracking-wide capitalize transition-all duration-700 ease-in-out ${idx === roleIndex
+                  ? 'translate-y-0 opacity-100'
+                  : idx === (roleIndex - 1 + roles.length) % roles.length
+                    ? '-translate-y-8 opacity-0'
+                    : 'translate-y-8 opacity-0'
+                  }`}
               >
                 {role}
               </span>
@@ -229,7 +254,7 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <div 
+      <div
         ref={scrollCueRef}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-0"
       >
