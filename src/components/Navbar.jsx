@@ -22,7 +22,7 @@ export default function Navbar() {
 
   // IntersectionObserver to track the currently viewed section for nav highlighting
   useEffect(() => {
-    const sections = ['home', 'works', 'about', 'articles', 'contact'];
+    const sections = ['home', 'works', 'about', 'contact'];
     
     const observerOptions = {
       root: null,
@@ -77,8 +77,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Projects', target: 'works' },
-    { label: 'Details', target: 'about' },
-    { label: 'Articles', target: 'articles' },
+    { label: 'About', target: 'about' },
     { label: 'Contact', target: 'contact' }
   ];
 

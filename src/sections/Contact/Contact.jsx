@@ -107,7 +107,19 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate successful edges submission
+
+    // No backend on this site, so open a pre-filled draft in the visitor's email client.
+    const formData = new FormData(e.currentTarget);
+    const name = String(formData.get('name') || '').trim();
+    const email = String(formData.get('email') || '').trim();
+    const message = String(formData.get('message') || '').trim();
+
+    const subject = encodeURIComponent(`Portfolio enquiry from ${name || 'your website'}`);
+    const body = encodeURIComponent(
+      `${message}\n\n— ${name}${email ? `\nReply to: ${email}` : ''}`
+    );
+
+    window.location.href = `mailto:rehanpatel2194@gmail.com?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 
@@ -192,16 +204,23 @@ export default function Contact() {
                 <CheckCircle className="w-8 h-8 text-golden-sand" />
               </div>
               <h3 className="font-display text-2xl font-bold text-foam-white">
-                Message Sent Safely!
+                Your draft is ready.
               </h3>
               <p className="font-body text-sm text-foam-white/60 max-w-sm">
-                Like a message in a bottle floating on the current, it's headed my way. I will respond to your tide as soon as possible.
+                Your email app should be open with the message filled in — just hit send. If nothing happened, email me directly at{' '}
+                <a
+                  href="mailto:rehanpatel2194@gmail.com"
+                  className="text-golden-sand hover:text-sunset-coral underline underline-offset-2"
+                >
+                  rehanpatel2194@gmail.com
+                </a>
+                .
               </p>
               <button
                 onClick={() => setSubmitted(false)}
                 className="font-mono text-xs text-sunset-coral hover:text-golden-sand uppercase tracking-wider underline pt-4"
               >
-                Send another message
+                Edit another message
               </button>
             </div>
           ) : (
@@ -215,7 +234,7 @@ export default function Contact() {
                 className="group w-full md:w-auto self-end flex items-center justify-center gap-2 bg-sunset-coral hover:bg-sunset-coral/95 text-foam-white font-mono text-xs tracking-wider uppercase px-6 py-4 rounded-full transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none"
                 data-hover
               >
-                <span>Send Message</span>
+                <span>Compose Email</span>
                 <Send className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
             </form>

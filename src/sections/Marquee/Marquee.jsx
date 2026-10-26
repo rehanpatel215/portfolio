@@ -185,7 +185,7 @@ export default function Marquee() {
       <div className="relative z-10 w-full flex flex-col gap-8">
         
         {/* Row 1 (Scrolled Left) */}
-        <MarqueeRow baseVelocity={-5}>
+        <MarqueeRow baseVelocity={-2}>
           {skills.map((skill, index) => (
             <span key={index} className={`${skill.color} flex items-center gap-12`}>
               <span>{skill.text}</span>
@@ -195,7 +195,7 @@ export default function Marquee() {
         </MarqueeRow>
 
         {/* Row 2 (Scrolled Right) */}
-        <MarqueeRow baseVelocity={5}>
+        <MarqueeRow baseVelocity={2}>
           {[...skills].reverse().map((skill, index) => (
             <span key={index} className={`${skill.color} flex items-center gap-12`}>
               <span>{skill.text}</span>

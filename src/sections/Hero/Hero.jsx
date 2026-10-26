@@ -30,10 +30,9 @@ export default function Hero() {
   const isRunningRef = useRef(false);
 
   const roles = [
-    'Creative Developer',
-    'UI/UX Designer',
-    'surfer of interfaces',
-    'WebGL Enthusiast'
+    'AI/ML Engineer',
+    'Full-Stack Developer',
+    'Creative Technologist'
   ];
 
   // 1. Scroll listener for parallax background offset

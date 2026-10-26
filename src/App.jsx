@@ -7,7 +7,6 @@ import ServiceSummary from './sections/ServiceSummary';
 import Works from './sections/Works/Works';
 import Marquee from './sections/Marquee/Marquee';
 import About from './sections/About/About';
-import Articles from './sections/Articles/Articles';
 import Contact from './sections/Contact/Contact';
 import Footer from './components/Footer';
 
@@ -57,7 +56,6 @@ function App() {
           <Works />
           <Marquee />
           <About />
-          <Articles />
           <Contact />
         </main>
 

@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ExternalLink, Waves } from 'lucide-react';
+import { ExternalLink, HeartPulse, Sprout } from 'lucide-react';
 
 const projects = [
   {
     id: 1,
     num: '01',
-    title: 'Lagoon CMS',
-    desc: 'A calm, lightweight headless content manager tailored for coastal eco-resorts.',
-    tags: ['React', 'GraphQL', 'Tailwind v4'],
-    link: 'https://github.com',
+    title: 'Sanchar — RuralCare Connect',
+    desc: 'Full-stack rural health platform connecting ASHA workers, PHCs and district hospitals with smart triage routing, referrals, OPD queues and medicine stock tracking.',
+    tags: ['React 18', 'Node.js', 'PostgreSQL', 'JWT'],
+    demo: null,
+    code: 'https://github.com/rehanpatel215/SAN_CHAR',
     art: (
       <div className="w-full h-full bg-twilight-teal flex flex-col justify-between p-6 relative overflow-hidden select-none">
         <div className="flex justify-between items-start">
@@ -18,13 +19,26 @@ const projects = [
             <div className="w-20 h-2 bg-foam-white/40 rounded-full" />
           </div>
           <div className="w-8 h-8 rounded-full bg-golden-sand/20 flex items-center justify-center">
-            <Waves className="w-4 h-4 text-golden-sand" />
+            <HeartPulse className="w-4 h-4 text-golden-sand" />
           </div>
         </div>
-        <div className="h-24 w-full bg-deep-sea/50 rounded-lg p-3 border border-twilight-teal/50 flex flex-col justify-end">
-          <div className="w-full h-2.5 bg-lagoon/60 rounded mb-2" />
-          <div className="w-2/3 h-2 bg-shallow-water/40 rounded" />
+
+        {/* Referral / triage path */}
+        <div className="flex items-center justify-between gap-2 mt-4">
+          {['ASHA', 'PHC', 'District'].map((node, index) => (
+            <React.Fragment key={node}>
+              <span className="font-mono text-[9px] tracking-wider text-foam-white/80 border border-twilight-teal/60 bg-deep-sea/40 rounded-full px-2.5 py-1">
+                {node}
+              </span>
+              {index < 2 && (
+                <span className="flex-1 h-px bg-sunset-coral/50 relative">
+                  <span className="absolute right-0 -top-[3px] w-1.5 h-1.5 rounded-full bg-sunset-coral" />
+                </span>
+              )}
+            </React.Fragment>
+          ))}
         </div>
+
         <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-sunset-coral/20 rounded-full blur-xl" />
       </div>
     )
@@ -32,20 +46,45 @@ const projects = [
   {
     id: 2,
     num: '02',
-    title: 'TideLine UI',
-    desc: 'A WebGL-driven animation system and utility library for organic canvas easing.',
-    tags: ['Three.js', 'GSAP', 'CSS Shaders'],
-    link: 'https://github.com',
+    title: 'CrayonAI — Search Space Visualizer',
+    desc: 'Route planner built on real OpenStreetMap data that visualises how Dijkstra, A*, BFS and DFS explore a road network, with live traffic simulation and automatic rerouting.',
+    tags: ['Python', 'OSMnx', 'NetworkX', 'React 19'],
+    demo: null,
+    code: 'https://github.com/rehanpatel215/CrayonAI',
     art: (
       <div className="w-full h-full bg-[#16303f] flex items-center justify-center p-6 relative overflow-hidden select-none">
-        {/* Wavy vector line designs that evoke water currents */}
-        <svg viewBox="0 0 100 100" className="w-full h-full text-shallow-water/30 stroke-current fill-none">
-          <path d="M -20 30 C 20 10, 30 70, 70 50 C 90 40, 110 80, 130 60" strokeWidth="2" className="animate-float" />
-          <path d="M -20 50 C 20 30, 45 85, 80 60 C 100 50, 110 90, 130 70" strokeWidth="1.5" className="animate-float" style={{ animationDelay: '-2s' }} />
-          <path d="M -20 70 C 15 50, 40 95, 75 75 C 95 65, 115 100, 130 80" strokeWidth="1" className="animate-float" style={{ animationDelay: '-4s' }} />
+        {/* Abstract path-search graph */}
+        <svg viewBox="0 0 200 120" className="w-full h-full" fill="none">
+          <g className="text-shallow-water/20" stroke="currentColor" strokeWidth="1">
+            <path d="M 15 95 L 55 55 L 100 70 L 145 30 L 185 45" />
+            <path d="M 15 95 L 70 95 L 100 70" />
+            <path d="M 100 70 L 115 105 L 165 95" />
+            <path d="M 55 55 L 75 20 L 145 30" />
+          </g>
+          <path
+            d="M 15 95 L 55 55 L 100 70 L 145 30 L 185 45"
+            className="stroke-golden-sand"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          {[
+            [15, 95],
+            [55, 55],
+            [100, 70],
+            [145, 30],
+            [185, 45]
+          ].map(([cx, cy], index) => (
+            <circle
+              key={`${cx}-${cy}`}
+              cx={cx}
+              cy={cy}
+              r={index === 0 || index === 4 ? 4 : 2.5}
+              className={index === 0 || index === 4 ? 'fill-sunset-coral' : 'fill-golden-sand'}
+            />
+          ))}
         </svg>
         <div className="absolute top-4 right-4 bg-sunset-coral text-[9px] font-mono tracking-widest text-foam-white px-2 py-0.5 rounded uppercase">
-          Shader Mode
+          A* · Dijkstra
         </div>
       </div>
     )
@@ -53,48 +92,41 @@ const projects = [
   {
     id: 3,
     num: '03',
-    title: 'Coral3D',
-    desc: 'Procedural 3D scene engine rendering simulated ocean coral reef ecosystems.',
-    tags: ['React Three Fiber', 'Shaders', 'Vite'],
-    link: 'https://github.com',
-    art: (
-      <div className="w-full h-full bg-deep-sea flex items-center justify-center relative overflow-hidden select-none">
-        {/* Abstract glowing sun & overlapping ocean rings */}
-        <div className="absolute w-36 h-36 bg-[radial-gradient(circle,rgba(244,200,122,0.15)_0%,transparent_70%)]" />
-        <div className="w-16 h-16 rounded-full bg-golden-sand relative flex items-center justify-center shadow-[0_0_30px_rgba(244,200,122,0.5)]">
-          <div className="absolute inset-[-12px] border border-sunset-coral/30 rounded-full animate-ping" style={{ animationDuration: '3s' }} />
-          <div className="w-12 h-12 rounded-full border border-deep-sea/45 border-dashed animate-spin" style={{ animationDuration: '8s' }} />
-        </div>
-        <div className="absolute bottom-4 left-4 font-mono text-[9px] text-shallow-water tracking-wider">
-          GLSL Easing: Active
-        </div>
-      </div>
-    )
-  },
-  {
-    id: 4,
-    num: '04',
-    title: 'ShellSync',
-    desc: 'Serverless asset distribution platform with edge caching optimized for design heavy portfolios.',
-    tags: ['Cloudflare Workers', 'KV Store', 'WASM'],
-    link: 'https://github.com',
+    title: 'AI Crop Advisory',
+    desc: 'Flask app that recommends crops from soil parameters using a Random Forest classifier, with a fertilizer advisory module explained by the Gemini API.',
+    tags: ['Flask', 'scikit-learn', 'Pandas', 'Gemini API'],
+    demo: null,
+    code: 'https://github.com/rehanpatel215/AI-CROP',
     art: (
       <div className="w-full h-full bg-gradient-to-br from-twilight-teal to-deep-sea flex flex-col justify-between p-6 relative overflow-hidden select-none">
-        <div className="border border-golden-sand/20 rounded-md p-3 bg-deep-sea/35">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-sunset-coral" />
-            <span className="font-mono text-[10px] text-foam-white/70">Edge-node-04 (SFO)</span>
-          </div>
-          <div className="flex gap-1.5">
-            <div className="h-6 w-3 bg-shallow-water/30 rounded" />
-            <div className="h-6 w-3 bg-shallow-water/50 rounded" />
-            <div className="h-6 w-3 bg-golden-sand/70 rounded" />
-            <div className="h-6 w-3 bg-sunset-coral/80 rounded" />
+        <div className="flex justify-between items-start">
+          <span className="font-mono text-[9px] tracking-widest text-shallow-water uppercase">
+            Soil input → crop
+          </span>
+          <div className="w-8 h-8 rounded-full bg-golden-sand/20 flex items-center justify-center">
+            <Sprout className="w-4 h-4 text-golden-sand" />
           </div>
         </div>
-        <div className="flex items-end justify-between mt-4">
-          <span className="font-display font-semibold text-2xl text-golden-sand">99.9%</span>
-          <span className="font-mono text-[9px] text-foam-white/40">Uptime Guarantee</span>
+
+        {/* Soil parameter bars (N, P, K, pH, rain) */}
+        <div className="flex items-end gap-2 h-20 mt-2">
+          {[
+            { label: 'N', h: 'h-8' },
+            { label: 'P', h: 'h-12' },
+            { label: 'K', h: 'h-10' },
+            { label: 'pH', h: 'h-16' },
+            { label: 'Rain', h: 'h-6' }
+          ].map((param) => (
+            <div key={param.label} className="flex-1 flex flex-col items-center gap-1.5">
+              <div className={`w-full ${param.h} bg-shallow-water/40 rounded-sm`} />
+              <span className="font-mono text-[8px] text-foam-white/50">{param.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-end justify-between">
+          <span className="font-display font-semibold text-xl text-golden-sand">Random Forest</span>
+          <span className="font-mono text-[9px] text-foam-white/40">7 features</span>
         </div>
       </div>
     )
@@ -111,7 +143,7 @@ export default function Works() {
     if (window.innerWidth < 1024) return;
 
     const preview = previewRef.current;
-    
+
     // QuickTo position binders for lag follower effect
     const xTo = gsap.quickTo(preview, "x", { duration: 0.45, ease: "power3.out" });
     const yTo = gsap.quickTo(preview, "y", { duration: 0.45, ease: "power3.out" });
@@ -133,7 +165,7 @@ export default function Works() {
       className="relative bg-deep-sea py-24 md:py-32 px-6 md:pl-32 md:pr-12 border-t border-twilight-teal/20 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="space-y-4">
@@ -141,17 +173,14 @@ export default function Works() {
               Works & Experiments
             </span>
             <h2 className="font-display text-5xl md:text-6xl font-bold tracking-tight text-foam-white">
-              Selected Projects
+              Projects
             </h2>
           </div>
-          <p className="font-body text-sm md:text-base text-foam-white/60 max-w-md">
-            A curated showcase of applications built with organic animations, immersive 3D, and clean aesthetic layouts.
-          </p>
         </div>
 
         {/* Projects List Container */}
         <div className="border-t border-twilight-teal/30 divide-y divide-twilight-teal/20 relative">
-          
+
           {projects.map((project) => (
             <div
               key={project.id}
@@ -172,7 +201,7 @@ export default function Works() {
                   <p className="font-body text-sm md:text-base text-foam-white/50 max-w-xl mt-2 transition-colors group-hover:text-foam-white/70">
                     {project.desc}
                   </p>
-                  
+
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mt-4">
                     {project.tags.map((tag) => (
@@ -187,16 +216,31 @@ export default function Works() {
                 </div>
               </div>
 
-              {/* View Link */}
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs font-mono text-golden-sand hover:text-sunset-coral tracking-wider uppercase md:self-center transition-colors"
-              >
-                <span>View Code</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
+              {/* Project Links */}
+              <div className="flex flex-wrap items-center gap-5">
+                {project.demo && (
+                  <a
+                    href={project.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs font-mono text-golden-sand hover:text-sunset-coral tracking-wider uppercase md:self-center transition-colors"
+                    aria-label={`${project.title} live demo`}
+                  >
+                    <span>Live Demo</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+                <a
+                  href={project.code}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-xs font-mono text-golden-sand hover:text-sunset-coral tracking-wider uppercase md:self-center transition-colors"
+                  aria-label={`${project.title} source code`}
+                >
+                  <span>View Code</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
 
               {/* Mobile Inline Preview (Shown only on screens < 1024px) */}
               <div className="w-full lg:hidden h-52 mt-6 rounded-lg overflow-hidden border border-twilight-teal/30 shadow-md">
@@ -224,7 +268,7 @@ export default function Works() {
             key={project.id}
             className="absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
             style={{
-              clipPath: activeProject === project.id 
+              clipPath: activeProject === project.id
                 ? 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' // Fully visible
                 : 'polygon(0% 100%, 100% 80%, 100% 100%, 0% 100%)', // Diagonally wiped out to bottom
               zIndex: activeProject === project.id ? 2 : 1,
@@ -235,7 +279,7 @@ export default function Works() {
           </div>
         ))}
       </div>
-      
+
     </section>
   );
 }

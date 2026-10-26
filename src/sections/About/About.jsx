@@ -101,7 +101,7 @@ export default function About() {
               {/* Character overlay */}
               <div className="relative z-10 space-y-1">
                 <p className="font-mono text-[10px] tracking-[0.2em] text-golden-sand uppercase">
-                  Based in SF / Remote
+                  Mangalore, India · Open to remote
                 </p>
                 <h3 className="font-display text-2xl font-bold">Rehan Patel</h3>
               </div>
@@ -121,12 +121,31 @@ export default function About() {
           </div>
 
           <p className="font-body text-base md:text-lg text-driftwood/80 leading-relaxed reveal-line">
-            I am a creative developer who builds immersive websites that feel as natural as waves rolling onto the sand. By combining structured frontend code with expressive animations, I bridge the gap between technical logic and dynamic brand storytelling.
+            I'm a third-year AI &amp; ML engineering student in Mangalore who builds products end to end — from Random Forest classifiers and full-stack health platforms to the interfaces people actually touch. I care about the last mile: making technical systems feel obvious to use.
           </p>
 
           <p className="font-body text-sm md:text-base text-driftwood/70 leading-relaxed reveal-line">
-            When I'm not tweaking canvas buffers or polishing GSAP timelines, you can find me studying coastal currents, exploring digital photography, or designing minimalistic interfaces. I thrive at the intersection of high-fidelity prototyping and custom 3D web graphics.
+            Outside coursework I'm an active member of the Sahyadri Open Source Community and a hackathon mentor. When I'm not shipping features, you'll find me studying coastal currents, shooting digital photography, or polishing the animations on this site.
           </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-driftwood/10 reveal-line">
+            <div className="space-y-1">
+              <span className="font-mono text-[10px] tracking-[0.2em] text-sunset-coral uppercase block">
+                Education
+              </span>
+              <p className="font-body text-sm text-driftwood/80 leading-snug">
+                B.E. AI &amp; ML, Sahyadri College
+              </p>
+            </div>
+            <div className="space-y-1">
+              <span className="font-mono text-[10px] tracking-[0.2em] text-sunset-coral uppercase block">
+                Community
+              </span>
+              <p className="font-body text-sm text-driftwood/80 leading-snug">
+                Sahyadri Open Source Community (SOSC) member · Hack-Harbor mentor
+              </p>
+            </div>
+          </div>
 
           {/* Links and CTA button */}
           <div className="flex flex-wrap items-center gap-6 pt-4 reveal-line">
